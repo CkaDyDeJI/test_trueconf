@@ -178,10 +178,13 @@ namespace MedForm
       Point loc = new Point(Program.Settings.Drawing.ControlXSpacing, Program.Settings.Drawing.ControlYSpacing);
       int y = loc.Y;
       int num = 0;
+            //var dict = DBUtil.GetFieldValueDict();// (DBUtil.TableName == DBUtil.InitialTableName) ? DBUtil.GetFieldValueDict() : null;
       foreach (FieldOps.FieldInfo field in this.FieldOps.Fields)
       {
         if (!field.IsHeader)
         {
+          //if (dict != null)
+            //field.Value = dict[field.Name];
           this.CreateControl(this.FieldsPanel, loc, field);
           loc.Y += this.GetControlHeight(field.Type) + Program.Settings.Drawing.ControlYSpacing;
           ++num;
@@ -241,7 +244,7 @@ namespace MedForm
         case FieldOps.FieldType.Checkbox:
           CheckBox checkBox = new CheckBox();
           checkBox.Enabled = !fi.IsReadOnly;
-          checkBox.Checked = (int) fi.Value == 1;
+          checkBox.Checked = (Int32.Parse(fi.Value.ToString()) == 1);
           checkBox.CheckedChanged += new EventHandler(this.Control_ValueChanged);
           control = (Control) checkBox;
           break;
@@ -249,7 +252,7 @@ namespace MedForm
           TextBox textBox2 = new TextBox();
           textBox2.ReadOnly = true;
           string empty = string.Empty;
-          fi.FkeyValues.TryGetValue((int) fi.Value, out empty);
+          fi.FkeyValues?.TryGetValue(Int32.Parse(fi.Value.ToString()), out empty);
           textBox2.Text = empty;
           control = (Control) textBox2;
           break;

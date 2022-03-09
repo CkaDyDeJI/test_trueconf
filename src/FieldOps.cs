@@ -10,13 +10,14 @@ namespace MedForm
 
     public void LoadFields()
     {
+      var dict = DBUtil.GetFieldValueDict();
       this.Fields = new List<FieldOps.FieldInfo>();
       DataSet dataSet = DBUtil.SelectProc("MF_GET_FIELD_LIST", (object) DBUtil.TableName);
       for (int index = 0; index < dataSet.Tables[0].Rows.Count; ++index)
       {
         DataRow row = dataSet.Tables[0].Rows[index];
         FieldOps.FieldInfo fieldInfo = new FieldOps.FieldInfo();
-        fieldInfo.FromRow(row);
+        fieldInfo.FromRow(row, dict);
         this.Fields.Add(fieldInfo);
       }
     }
@@ -70,7 +71,7 @@ namespace MedForm
       public Dictionary<string, List<string>> PhraseList;
       public Dictionary<int, string> FkeyValues;
 
-      public void FromRow(DataRow row)
+      public void FromRow(DataRow row, Dictionary<string, object> dict)
       {
         this.Name = row["FieldName"].ToString();
         this.Type = (FieldOps.FieldType) Enum.Parse(typeof (FieldOps.FieldType), row["MFFIELDTYPEID"].ToString());
@@ -79,7 +80,9 @@ namespace MedForm
         this.IsHeader = int.Parse(row["IsHeader"].ToString()) == 1;
         this.PhraseList = (Dictionary<string, List<string>>) null;
         this.FkeyValues = (Dictionary<int, string>) null;
-        this.GetValue(row);
+        dict.TryGetValue(this.Name, out this.Value);
+        if (this.Value == null)
+          this.GetValue(row);
         if (this.Type == FieldOps.FieldType.MultiText)
           this.GetPhraseList();
         this.IsModified = false;

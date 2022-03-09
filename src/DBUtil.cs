@@ -192,6 +192,22 @@ namespace MedForm
       return dictionary;
     }
 
+    public static Dictionary<string, object> GetFieldValueDict()
+    {
+        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+        DataSet ds = DBUtil.SelectProc("MF_GET_FIELD_TEMPLATE", (object)DBUtil.TableName, (object)DBUtil.RecordID);
+
+        for (int index = 0; index < ds.Tables[0].Rows.Count; ++index)
+        {
+            DataRow row = ds.Tables[0].Rows[index];
+            string name = DBUtil.GetStringValue(row, "fieldname").Trim();
+            object value = (object)(row["fieldvalue"].ToString().Trim());
+            dictionary[name] = value;
+        }
+
+        return dictionary;
+    }
+
     public static int GetFieldValueFkey(string FieldName)
     {
       DataSet ds = DBUtil.SelectProc("MF_GET_FIELD_VALUE_FKEY", (object) DBUtil.TableName, (object) FieldName, (object) DBUtil.RecordID);
